@@ -1,0 +1,127 @@
+redis_session:
+  host: "10.10.13.50"
+  port: 61500
+  password: "wix.s#3@b"
+  db: 0
+  pool_size: 10
+
+redis_res99:
+  host: "10.10.13.50"
+  port: 61599
+  password: "wix.s#3@b"
+  db: 0
+  pool_size: 10
+
+redis_res6_1:
+  host: "10.10.13.50"
+  port: 61501
+  password: "wix.s#3@b"
+  db: 0
+  pool_size: 10
+
+redis_res6_2:
+  host: "10.10.13.50"
+  port: 61502
+  password: "wix.s#3@b"
+  db: 0
+  pool_size: 10
+
+redis_res1:
+  host: "10.10.13.50"
+  port: 41501
+  password: "wix.s#3@b"
+  db: 0
+  pool_size: 10
+
+#redis_res2:
+#  host: "10.10.13.50"
+#  port: 41502
+#  password: "wix.s#3@b"
+#  db: 0
+#  pool_size: 10
+
+#redis_res3:
+#  host: "10.10.13.50"
+#  port: 41503
+#  password: "wix.s#3@b"
+#  db: 0
+#  pool_size: 10
+
+#redis_res4:
+#  host: "10.10.13.50"
+#  port: 41504
+#  password: "wix.s#3@b"
+#  db: 0
+#  pool_size: 10
+
+#redis_res5:
+#  host: "10.10.13.50"
+#  port: 41505
+#  password: "wix.s#3@b"
+#  db: 0
+#  pool_size: 10
+
+
+#redis_res6:
+#  host: "10.10.13.50"
+#  port: 41506
+#  password: "wix.s#3@b"
+#  db: 0
+#  pool_size: 10
+
+
+#redis_res7:
+#  host: "10.10.13.50"
+#  port: 41507
+#  password: "wix.s#3@b"
+#  db: 0
+#  pool_size: 10
+
+redis_res8:
+  host: "10.10.13.50"
+  port: 41508
+  password: "wix.s#3@b"
+  db: 0
+  pool_size: 10
+
+redis_res9:
+  host: "10.10.13.50"
+  port: 41509
+  password: "wix.s#3@b"
+  db: 0
+  pool_size: 10
+
+
+redis_res5_4:
+  host: "10.10.13.50"
+  port: 51504
+  password: "wix.s#3@b"
+  db: 0
+  pool_size: 10
+
+
+redis_res_ac2:
+  host: "10.10.13.50"
+  port: 61502
+  password: "wix.s#3@b"
+  db: 0
+  pool_size: 10
+
+redis_res6_5:
+  host: "10.10.13.50"
+  port: 61505
+  password: "wix.s#3@b"
+  db: 0
+  pool_size: 10
+
+redis_res6_8:
+  host: "10.10.13.50"
+  port: 61508
+  password: "wix.s#3@b"
+  db: 0
+  pool_size: 10
+
+
+
+
+

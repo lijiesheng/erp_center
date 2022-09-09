@@ -1,0 +1,55 @@
+msyql_dxhj_oa_db_opt:
+  host: "10.10.13.50"
+  port: 3306
+  user: "root"
+  password: 'trf.d@z'
+  dbname: "dxhj_oa"
+  max_open_conns: 200
+  max_idle_conns: 50
+
+mysql_dxhj_fund_db_opt:
+  host: "10.10.13.50"
+  port: 3306
+  user: "root"
+  password: 'trf.d@z'
+  dbname: "dxhj_fund"
+  max_open_conns: 200
+  max_idle_conns: 50
+
+mysql_dxhj_gm_fund_trade:
+  host: "10.10.13.50"
+  port: 3306
+  user: "root"
+  password: 'trf.d@z'
+  dbname: "fund_trade"
+  max_open_conns: 200
+  max_idle_conns: 50
+
+mysql_tl50_erp_stock_db_opt:
+  host: "10.10.13.50"
+  port: 3306
+  user: "root"
+  password: 'trf.d@z'
+  dbname: "tl50_erp_stock"
+  max_open_conns: 200
+  max_idle_conns: 50
+
+mysql_dxhj_sm_zg_db_opt:
+  host: "10.10.13.50"
+  port: 3306
+  user: "root"
+  password: 'trf.d@z'
+  dbname: "dxhj_sm_zg"
+  max_open_conns: 200
+  max_idle_conns: 50
+
+
+msyql_fund_dx_jydb:
+  host: "10.10.13.50"
+  port: 3306
+  user: "root"
+  password: 'trf.d@z'
+  dbname: "dx_jydb"
+  max_open_conns: 200
+  max_idle_conns: 50
+

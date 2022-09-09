@@ -1,0 +1,12 @@
+name: "erp_center"   # 这个暂时不知道
+mode: "dev"        # 这个暂时用不到，只有一种模式
+port: 6111         # 这个和 erp_center/config/db.js  web_server_env.port 保持一致
+version: "v0.0.1"
+start_time: "2022-08-15"
+machine_id: 1
+
+auth:
+  jwt_expire: 8760
+
+
+
