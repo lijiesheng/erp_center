@@ -2,6 +2,7 @@ package main
 
 import (
 	"erp_center/dao/mysql"
+	"erp_center/dao/rabbitmq/dead_queue_ttl"
 	"erp_center/dao/redis"
 	"erp_center/logger"
 	"erp_center/router"
@@ -36,11 +37,18 @@ func main() {
 	// 6、初始化 logger
 	logger.Init(setting.Logger, setting.Conf.Mode)
 
-	// 7、初始化 router
+	// 7、初始化 rabbitmq
+	dead_queue_ttl.Init("dead-exchange_1", "dead-key_1")
+
+	// 7.1 消费消息
+	go dead_queue_ttl.Rabbitmq.RecieveRoutingDeadQueue()
+
+	// 8、初始化 router  这个放在最后
 	r := router.SetupRiouter(setting.Conf.Mode)
 	err = r.Run(fmt.Sprintf(":%d", setting.Conf.Port))
 	if err != nil {
 		fmt.Printf("run server failed, err:%d\n", err)
 		return
 	}
+
 }

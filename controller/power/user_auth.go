@@ -1,30 +1,25 @@
 package power
 
 import (
+	"erp_center/controller/request"
 	"erp_center/controller/resp"
+	"erp_center/dao/mysql"
+	"erp_center/dao/rabbitmq/dead_queue_ttl"
+	logic "erp_center/logic/user"
+	"erp_center/model"
+	"erp_center/pkg/jwt"
+	"erp_center/util"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/render"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
-	"net/http"
-	"time"
 )
-
-type SignUpParam struct {
-	TlAccount      string `form:"tl_account" json:"tl_account" binding:"gte=1"`
-	HashedPassword string `form:"hashed_password" json:"hashed_password" binding:"gte=1"`
-	Jpc            string `form:"jpc" json:"jpc"`
-}
 
 // tl_account=crmadmin&hashed_password=7c4a8d09ca3762af61e59520943dc26494f8941
 func Login(c *gin.Context) {
-	// 1、获取参数
-	var p SignUpParam
+	var p mysql.SignUpParam
 	if err := c.ShouldBind(&p); err != nil {
-		// 请求参数有误，直接返回响应
 		zap.L().Error("LoginHandler with invalid params ", zap.Error(err))
-		// 判断 err 是不是 validator.ValidationErrors 类型
 		_, ok := err.(validator.ValidationErrors) // 验证参数是否传入错误
 		if !ok {                                  // 非validator.ValidationErrors类型错误直接返回
 			resp.ResponseErrorJsonpJSON(c, resp.CodeInvalidParam, resp.CodeInvalidParam.GetMsg(), err.Error())
@@ -33,33 +28,79 @@ func Login(c *gin.Context) {
 		resp.ResponseErrorJsonpJSON(c, resp.CodeInvalidParam, resp.CodeInvalidParam.GetMsg(), err.Error())
 		return
 	}
-	resp.ResponseErrorJsonpJSON(c, resp.CodeInvalidParam, resp.CodeInvalidParam.GetMsg(), nil)
-	// 2、参数校验
+	var user *model.SysUsers
+	var err error
+	if user, err = logic.Login(&p); err != nil {
+		resp.ResponseErrorJsonpJSON(c, 10000, err.Error(), nil)
+		return
+	}
+	// 生成 token
+	token, err := jwt.GenToken(p.TlAccount, p.HashedPassword, int64(user.Id))
+	if err != nil {
+		fmt.Println("生成 token 错误")
+		return
+	}
+	c.Set("token", token)
+	fmt.Println("token==>", token)
+	fmt.Println("真实的ip 地址 : ", util.RealIP(c))
+	resp.ResponseSucJsonpJSON(c)
+}
 
-	// 3、业务处理调用 logic
+// 注册完成后，使用 rabbitmq 30分钟推送消息
+func PostLogin(c *gin.Context) {
+	fmt.Println("进来了")
 
-	// 4、返回数据
+	c.JSON(200, gin.H{
+		"message": "Hello world!",
+		"status":  1,
+		"success": true,
+	})
 
 }
 
+func Register(c *gin.Context) {
+	fmt.Println("Register 进来了")
+	// 发送一条消息
+	dead_queue_ttl.Rabbitmq.PublishRouting("注册账号是" + "hello") // 生成消息
+
+	c.JSON(200, gin.H{
+		"message": "Hello world!",
+		"status":  1,
+		"success": true,
+	})
+}
+
+// todo
 func Get_info(c *gin.Context) {
-	fmt.Println("Get_info 进来")
-	data := map[string]any{
-		"msg":      "账号不存在,请重新输入!",
-		"tg":       "login",
-		"_stamp":   time.Now().Unix(),
-		"status":   "fai",
-		"msg_code": 0,
+	var err error
+	var account any
+	if account, err = request.GetCurrent(c, request.CtxTlAccount); err != nil {
+		resp.ResponseErrorJsonpJSON(c, 10000, err.Error(), nil)
 	}
-	fmt.Println("bbb")
-	callback := c.DefaultQuery("jpc", "")
-	if callback == "" {
-		c.Render(http.StatusOK, render.JSON{Data: data})
+	user, err := logic.GetUserByTlAccount(account.(string))
+	if err != nil {
+		resp.ResponseErrorJsonpJSON(c, 10000, err.Error(), nil)
 		return
 	}
-	//s := `/**/ typeof ` + callback + ` === function && ` + callback
-	s := fmt.Sprintf(`/**/ typeof %s  === 'function' %s`, callback, callback)
-	//s1, _ := UnicodeEscape(s).MarshalJSON()
-	c.Render(http.StatusOK, render.JsonpJSON{Callback: s, Data: data})
-	return
+	resp.ResponseSucJsonpJSONWithData(c, user)
+}
+
+// 获取导航
+func User_pages(c *gin.Context) {
+	typeStr := c.Query("type")
+	switch typeStr {
+	case "ios":
+		nav := logic.AllowPagesParse()
+		type V struct {
+		}
+		resp.ResponseSucJsonpJSONWithData(c, nav)
+	case "ebs":
+	case "app":
+	default:
+
+	}
+}
+
+func Home_message_list(c *gin.Context) {
+	resp.ResponseSucJsonpJSONWithRecords(c, 1, 50, nil, 0)
 }
