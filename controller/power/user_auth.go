@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
+	"net/http"
 )
 
 // tl_account=crmadmin&hashed_password=7c4a8d09ca3762af61e59520943dc26494f8941
@@ -59,10 +60,35 @@ func PostLogin(c *gin.Context) {
 }
 
 func Register(c *gin.Context) {
-	fmt.Println("Register 进来了")
-	// 发送一条消息
+	// 1、获取参数
+	var registerData mysql.RegisterData
+	if err := c.ShouldBind(&registerData); err != nil {
+		fmt.Printf("%+v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 2、校验参数
+	if registerData.ConPassword != registerData.Password {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "两次密码不相同"})
+		return
+	}
+	if !util.VerifyEmailFormat(registerData.Email) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "邮箱错误"})
+		return
+	}
+
+	// 3、存入数据库
+	if err := logic.Register(&registerData); err != nil {
+		fmt.Printf("%+v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	// 4、发送一条消息
 	dead_queue_ttl.Rabbitmq.PublishRouting("注册账号是" + "hello") // 生成消息
 
+	// 5、返回
 	c.JSON(200, gin.H{
 		"message": "Hello world!",
 		"status":  1,

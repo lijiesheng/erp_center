@@ -3,6 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"erp_center/model"
+	"fmt"
 	"time"
 )
 
@@ -10,6 +11,14 @@ type SignUpParam struct {
 	TlAccount      string `form:"tl_account" json:"tl_account" binding:"gte=1"`
 	HashedPassword string `form:"hashed_password" json:"hashed_password" binding:"gte=1"`
 	Jpc            string `form:"jpc" json:"jpc"`
+}
+
+// 定义数据
+type RegisterData struct {
+	Username    string `form:"username" json:"username" binding:"required"`
+	Email       string `form:"email" json:"email" binding:"required"`
+	Password    string `form:"password" json:"password" binding:"required"`
+	ConPassword string `form:"conPassword" json:"conPassword" binding:"required"`
 }
 
 // 用户名密码判断
@@ -32,6 +41,22 @@ func Login(p *SignUpParam) (user *model.SysUsers, err error) {
 		return nil, ErrorUserPasswordExpired
 	}
 	return user, nil
+}
+
+// 用户注册
+func Register(registerData *RegisterData) error {
+	sqlInsert := `insert into extjs_user(username, email, password) values (?,?,?)`
+	ret, err := DBs.DxhjOa.Exec(sqlInsert, registerData.Username, registerData.Email, registerData.Password)
+	if err != nil {
+		return err
+	}
+	theID, err := ret.LastInsertId() // 新插入数据的id
+	if err != nil {
+		fmt.Printf("get lastinsert ID failed, err:%v\n", err)
+		return err
+	}
+	fmt.Printf("insert success, the id is %d.\n", theID)
+	return nil
 }
 
 // 根据指定的字段获取 sys_user

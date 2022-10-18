@@ -154,3 +154,11 @@ func AllowPagesParse() []*lib.Node {
 	nodes = append(nodes, aaa)
 	return nodes
 }
+
+// 注册
+func Register(registerData *mysql.RegisterData) error {
+	if err := mysql.Register(registerData); err != nil {
+		return err
+	}
+	return nil
+}
