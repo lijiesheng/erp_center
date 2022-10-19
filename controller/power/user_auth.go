@@ -102,11 +102,12 @@ func Register(c *gin.Context) {
 func ConfirmRegister(c *gin.Context) {
 	// 1、获取参数
 	var conRegisterData mysql.ConRegisterData
-	if err := c.ShouldBindQuery(&conRegisterData); err != nil {
+	if err := c.ShouldBind(&conRegisterData); err != nil {
 		fmt.Printf("%+v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	fmt.Printf("%+v\n", conRegisterData)
 
 	// 2、检验数据
 	if !util.VerifyEmailFormat(conRegisterData.Email) {
