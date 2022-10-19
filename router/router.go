@@ -31,6 +31,9 @@ func SetupRiouter(mode string) *gin.Engine {
 	r.GET("/st/sys.core/user_pages", power.User_pages)
 	r.GET("st/sys.core/home_message_list", power.Home_message_list)
 
+	// 获取导航条
+	r.GET("/get_nav", power.GetNav)
+
 	// 我的 api
 	// 1、我的考勤
 

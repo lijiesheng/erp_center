@@ -5,6 +5,7 @@ import (
 	"erp_center/controller/resp"
 	"erp_center/dao/mysql"
 	"erp_center/dao/rabbitmq/dead_queue_ttl"
+	"erp_center/lib"
 	logic "erp_center/logic/user"
 	"erp_center/model"
 	"erp_center/pkg/jwt"
@@ -194,4 +195,104 @@ func User_pages(c *gin.Context) {
 
 func Home_message_list(c *gin.Context) {
 	resp.ResponseSucJsonpJSONWithRecords(c, 1, 50, nil, 0)
+}
+
+// 获取导航条
+func GetNav(c *gin.Context) {
+	var err error
+	var username any
+	if username, err = request.GetCurrent(c, request.CtxTlAccount); err != nil {
+		resp.ResponseErrorJsonpJSON(c, 10000, err.Error(), nil)
+	}
+	fmt.Println("username==>", username)
+	//c.JSON(200, gin.H{
+	//	"status":  1,
+	//	"success": true,
+	//	"nav":     lib.NavMy,
+	//})
+	c.JSON(200, gin.H{
+		"expanded": true,
+		"children": []lib.Children{
+			{
+				Text:   "首页",
+				Leaf:   true,
+				Cls:    "node-link",
+				Mod:    "desktop",
+				ModURL: "desktop.Desktop",
+			},
+			{
+				Text:     "系统管理",
+				Expanded: true,
+				Cls:      "node-link",
+				Children: []lib.Children{
+					{
+						Text:   "角色管理",
+						Leaf:   true,
+						Cls:    "node-link",
+						Mod:    "role",
+						ModURL: "role.Role",
+					},
+					{
+						Text:   "用户管理",
+						Leaf:   true,
+						Cls:    "node-link",
+						Mod:    "user",
+						ModURL: "user.User",
+					},
+				},
+			},
+			{
+				Text:     "文章管理",
+				Expanded: true,
+				Children: []lib.Children{
+					{
+						Text: "文章列表",
+						Leaf: true,
+					},
+					{
+						Text: "发布文章",
+						Leaf: true,
+					},
+				},
+			},
+
+			{
+				Text:     "产品管理",
+				Expanded: true,
+				Children: []lib.Children{
+					{
+						Text: "产品列表",
+						Leaf: true,
+					},
+					{
+						Text: "新增产品",
+						Leaf: true,
+					},
+					{
+						Text: "产品监控",
+						Leaf: true,
+					},
+				},
+			},
+
+			{
+				Text:     "报表管理",
+				Expanded: true,
+				Children: []lib.Children{
+					{
+						Text: "生成报表",
+						Leaf: true,
+					},
+					{
+						Text: "报表统计",
+						Leaf: true,
+					},
+					{
+						Text: "报表打印",
+						Leaf: true,
+					},
+				},
+			},
+		},
+	})
 }
