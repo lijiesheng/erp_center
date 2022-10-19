@@ -23,7 +23,9 @@ func SetupRiouter(mode string) *gin.Engine {
 	// 中间键
 	r.GET("/r_login", power.Login)
 	r.POST("/r_login", power.PostLogin)
-	r.POST("/r_register", power.Register)
+	r.POST("/r_register", power.Register)               // 用户注册
+	r.GET("/r_confirm_register", power.ConfirmRegister) // 邮箱确认注册
+
 	r.Use(middlewares.JWTAuthMiddleware())
 	r.GET("/st/sys.core/user_info", power.Get_info)
 	r.GET("/st/sys.core/user_pages", power.User_pages)

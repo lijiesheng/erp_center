@@ -162,3 +162,15 @@ func Register(registerData *mysql.RegisterData) error {
 	}
 	return nil
 }
+
+func UpdateUser(registerData *mysql.ConRegisterData) error {
+	if err := mysql.UpdateUser(registerData); err != nil {
+		return err
+	}
+	return nil
+}
+
+// 修改数据库
+func Update(table string, column []string, data []any) {
+
+}

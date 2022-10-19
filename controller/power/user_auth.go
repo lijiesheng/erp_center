@@ -86,11 +86,51 @@ func Register(c *gin.Context) {
 	}
 
 	// 4、发送一条消息
-	dead_queue_ttl.Rabbitmq.PublishRouting("注册账号是" + "hello") // 生成消息
+	//dead_queue_ttl.Rabbitmq.PublishRouting("注册账号是" + "hello") // 生成消息
+	dead_queue_ttl.Rabbitmq.PublishRouting(registerData.Username + ";" + registerData.Email) // 生成消息
 
 	// 5、返回
 	c.JSON(200, gin.H{
 		"message": "Hello world!",
+		"status":  1,
+		"success": true,
+	})
+}
+
+// 获取用户名和邮箱，如果正确，修改 extjs_user 的 status = 0
+// 5min 之内有效
+func ConfirmRegister(c *gin.Context) {
+	// 1、获取参数
+	var conRegisterData mysql.ConRegisterData
+	if err := c.ShouldBindQuery(&conRegisterData); err != nil {
+		fmt.Printf("%+v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 2、检验数据
+	if !util.VerifyEmailFormat(conRegisterData.Email) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "邮箱错误"})
+		return
+	}
+
+	// 3、判断点击事件是否超过 10min
+	//now := time.Now()
+	//m, _ := time.ParseDuration("-1m")
+	//if !now.Add(10 * m).Before(registerData.RegisterTime) {
+	//	c.JSON(http.StatusBadRequest, gin.H{"error": "10min 有效期过了，请重新注册"})
+	//	return
+	//}
+
+	// 4. 修改数据库
+	if err := logic.UpdateUser(&conRegisterData); err != nil {
+		fmt.Printf("%+v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	// 5、跳转到登录页面
+	c.JSON(200, gin.H{
 		"status":  1,
 		"success": true,
 	})

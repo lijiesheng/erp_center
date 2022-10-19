@@ -7,18 +7,25 @@ import (
 	"time"
 )
 
+// get 请求
 type SignUpParam struct {
 	TlAccount      string `form:"tl_account" json:"tl_account" binding:"gte=1"`
 	HashedPassword string `form:"hashed_password" json:"hashed_password" binding:"gte=1"`
 	Jpc            string `form:"jpc" json:"jpc"`
 }
 
-// 定义数据
+// 定义数据 post 请求
 type RegisterData struct {
 	Username    string `form:"username" json:"username" binding:"required"`
 	Email       string `form:"email" json:"email" binding:"required"`
 	Password    string `form:"password" json:"password" binding:"required"`
 	ConPassword string `form:"conPassword" json:"conPassword" binding:"required"`
+}
+
+// 定义 Get
+type ConRegisterData struct {
+	Username string `form:"username" json:"username"`
+	Email    string `form:"email" json:"email"`
 }
 
 // 用户名密码判断
@@ -44,9 +51,10 @@ func Login(p *SignUpParam) (user *model.SysUsers, err error) {
 }
 
 // 用户注册
+// 用户点击邮箱的超级链接后，代表成功
 func Register(registerData *RegisterData) error {
-	sqlInsert := `insert into extjs_user(username, email, password) values (?,?,?)`
-	ret, err := DBs.DxhjOa.Exec(sqlInsert, registerData.Username, registerData.Email, registerData.Password)
+	sqlInsert := `insert into extjs_user(username, email, password, status) values (?,?,?,?)`
+	ret, err := DBs.DxhjOa.Exec(sqlInsert, registerData.Username, registerData.Email, registerData.Password, 1)
 	if err != nil {
 		return err
 	}
@@ -76,4 +84,23 @@ func GetUserByTlAccount(tl_account string) (user *model.SysUsers, err error) {
 		return nil, ErrorUserLeave
 	}
 	return user, nil
+}
+
+// 修改数据库
+func Update(table string, column []string, data []any) {
+
+}
+
+func UpdateUser(registerData *ConRegisterData) error {
+	sqlUpdate := `update extjs_user set status = 0 where username = ? and email = ? and status = 1`
+	ret, err := DBs.DxhjOa.Exec(sqlUpdate, registerData.Username, registerData.Email)
+	if err != nil {
+		return err
+	}
+	affected, err := ret.RowsAffected()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("update success, the num update is %d. \n", affected)
+	return nil
 }

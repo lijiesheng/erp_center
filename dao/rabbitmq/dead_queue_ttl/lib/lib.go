@@ -5,6 +5,7 @@ import (
 	"fmt"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
+	"strings"
 )
 
 // 连接信息
@@ -206,17 +207,21 @@ func (r *RabbitMQ) RecieveRoutingDeadQueue() {
 		for d := range messges {
 			fmt.Println("死信消费 11111111")
 			log.Printf("Received a message: %s", d.Body)
-
-			// 自己加的开始  发送邮件
-			mail.SendGoMail([]string{"2398027035@qq.com"}, "您好，这是gomail-text测试邮件",
-				`<html>
+			body := string(d.Body)
+			fmt.Println("body==>", body)
+			if body != "" {
+				split := strings.Split(body, ";")
+				// 自己加的开始  发送邮件
+				fmt.Println("split==>", split[1])
+				mail.SendGoMail([]string{split[1]}, "Extjs5 登录",
+					`<html>
 							<body>
-								<h1>您的服务存在异常</h1>
+								<href>`+"http://127.0.0.1:6111/r_confirm_register?username="+split[0]+"&email="+split[1]+`</href>
 							</body>
 						</html>
 				`)
-			// 自己加的结束
-
+				// 自己加的结束
+			}
 			d.Ack(false)
 		}
 	}()
