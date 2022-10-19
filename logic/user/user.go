@@ -31,6 +31,14 @@ func Login(p *mysql.SignUpParam) (user *model.SysUsers, err error) {
 	return user, nil
 }
 
+func LoginExtjs(loginData *mysql.LoginData) (extjs_user *model.ExtjsUser, err error) {
+	if extjs_user, err = mysql.LoginExtjs(loginData); err != nil {
+		return nil, err
+	} else {
+		return extjs_user, nil
+	}
+}
+
 func GetUserByTlAccount(tl_account string) (resDataUser *resData.ResUser, err error) {
 	resDataUser = &resData.ResUser{}
 	// 查询用户

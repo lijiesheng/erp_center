@@ -28,6 +28,12 @@ type ConRegisterData struct {
 	Email    string `form:"email" json:"email"`
 }
 
+// 登录
+type LoginData struct {
+	Username string `form:"username" json:"username" binding:"required"`
+	Password string `form:"password" json:"password" binding:"required"`
+}
+
 // 用户名密码判断
 func Login(p *SignUpParam) (user *model.SysUsers, err error) {
 	user = new(model.SysUsers)
@@ -48,6 +54,25 @@ func Login(p *SignUpParam) (user *model.SysUsers, err error) {
 		return nil, ErrorUserPasswordExpired
 	}
 	return user, nil
+}
+
+// 用户名密码判断
+func LoginExtjs(loginData *LoginData) (extjs_user *model.ExtjsUser, err error) {
+	extjs_user = new(model.ExtjsUser)
+	sqlSelect := `select id, username, password, email, token, status from extjs_user where username = ?`
+	if err := DBs.DxhjOa.Get(extjs_user, sqlSelect, loginData.Username); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrorUserNotExist
+		}
+		return nil, err // sql 报错了
+	}
+	if extjs_user.Password != loginData.Password {
+		return nil, ErrorInvalidPassword
+	}
+	if extjs_user.Status == 1 {
+		return nil, ErrorNotLoginEmail
+	}
+	return extjs_user, nil
 }
 
 // 用户注册

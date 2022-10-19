@@ -20,6 +20,7 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 				return
 			}
 			// 将当前的请求的 tl_account 信息保存到请求的上下文 c 上
+			// TlAccount 就是 username
 			c.Set(request.CtxTlAccount, token.TlAccount)
 			c.Set(request.ID, token.ID)
 			c.Next()

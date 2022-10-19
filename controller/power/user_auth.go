@@ -47,16 +47,40 @@ func Login(c *gin.Context) {
 	resp.ResponseSucJsonpJSON(c)
 }
 
-// 注册完成后，使用 rabbitmq 30分钟推送消息
 func PostLogin(c *gin.Context) {
-	fmt.Println("进来了")
+	var err error
+	// 1、获取参数
+	var loginData mysql.LoginData
+	if err = c.ShouldBind(&loginData); err != nil {
+		fmt.Printf("%+v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
+	// 2、校验参数
+
+	// 3、查询数据库
+	var extjs_user *model.ExtjsUser
+	extjs_user, err = logic.LoginExtjs(&loginData)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	// 4、生成 toekn
+	token, err := jwt.GenToken(extjs_user.Username, extjs_user.Password, int64(extjs_user.Id))
+	if err != nil {
+		fmt.Println("生成 token 错误")
+		return
+	}
+	c.Set("token", token)
+	// 5、返回前端
 	c.JSON(200, gin.H{
+		"token":   token,
 		"message": "Hello world!",
 		"status":  1,
 		"success": true,
 	})
-
 }
 
 func Register(c *gin.Context) {

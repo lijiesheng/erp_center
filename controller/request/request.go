@@ -8,6 +8,8 @@ import (
 const CtxTlAccount = "tlAccount"
 const ID = "ID"
 
+const Username = "username"
+
 var ErrorUserNotLogin = errors.New("用户没有登录")
 
 // 获取当前的天狼账号 或者 ID
